@@ -119,7 +119,6 @@ export default function EditMeterModalComponent(props: EditMeterModalComponentPr
 	// unit state
 	const unitState = useSelector((state: State) => state.units.units);
 
-
 	/* Edit Meter Validation:
 		Name cannot be blank
 		Area must be positive or zero
@@ -305,7 +304,18 @@ export default function EditMeterModalComponent(props: EditMeterModalComponentPr
 	// Note an earlier version had two useEffect calls: one for each menu. This lead to an issue because it did separate
 	// setState calls that were asynchronous. As a result, the second one could use state state when doing ...dropdownsState
 	// and lose the first changes. Fusing them fixes this.
+	const groupsState = useSelector((state: State) => state.groups.byGroupID);
+
 	useEffect(() => {
+		if (!state.displayable) {
+			console.log('1');
+			Object.values(groupsState).forEach(group => {
+				console.log('2');
+				if (group.displayable && group.deepMeters.includes(props.meter.id)) {
+					console.log('3');
+				}
+			});
+		}
 		// Graphic units compatible with currently selected unit
 		const compatibleGraphicUnits = new Set<UnitData>();
 		// Graphic units incompatible with currently selected unit
@@ -372,7 +382,7 @@ export default function EditMeterModalComponent(props: EditMeterModalComponentPr
 		});
 		// If either unit or the status of pik changes then this needs to be done.
 		// pik is needed since the compatible units is not correct until pik is available.
-	}, [state.unitId, state.defaultGraphicUnit, ConversionArray.pikAvailable()]);
+	}, [state.unitId, state.defaultGraphicUnit, ConversionArray.pikAvailable(), state.displayable]);
 
 	// If you edit and return to this page then want to see the DB result formatted for users
 	// for the readingFrequency. Since the update on save is to the global state, need to
